@@ -1,3 +1,5 @@
+import { sum } from 'ramda'
+
 import { game } from './life/life'
 
 var path = require('path')
@@ -31,7 +33,17 @@ function randomCells (filledFraction) {
 let cells = randomCells(0.5)
 let generations = 0
 
-let ups = 0 // updates per second, not accounting for the updateInterval
+let ups = [] // updates per second, not accounting for the updateInterval
+let lastAverage = 0
+
+function getAverageUps() {
+    let averageUps = ups.length == 0 ? lastAverage : Math.round(sum(ups) / ups.length)
+    if(ups.length >= 100) {
+        lastAverage = averageUps
+        ups = []
+    }
+    return averageUps
+}
 
 let lastGeneration = Date.now()
 let gps = 0 // generations per second, accounts for interval
@@ -44,7 +56,7 @@ setInterval(() => {
         let preUpdate = Date.now()
         cells = gol(cells)
         generations += 1
-        ups = Math.round(1000 / (Date.now() - preUpdate))
+        ups.push(1000 / (Date.now() - preUpdate))
     }
 }, updateInterval)
 
@@ -56,7 +68,7 @@ function update() {
 function renderDataToJSON() {
     return JSON.stringify({
         cells: [...cells],
-        stats: { gps, ups, generations}
+        stats: { gps, ups: getAverageUps(), generations}
     })
 }
 

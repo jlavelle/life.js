@@ -1,7 +1,7 @@
 import { any, equals } from 'ramda'
 
 import { Point, getCoordinatesOfIndex, getIndexOfCoordinates } from '../../shared/coordinates'
-import { SetGrid } from './grid'
+import { SetGrid } from '../../shared/grid'
 
 function Ruleset(born, survives) {
     return (alive, neighbors) => {

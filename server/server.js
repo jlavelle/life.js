@@ -1,7 +1,7 @@
 import { sum } from 'ramda'
 
 import { game } from './life/life'
-import { SetGrid } from './life/grid'
+import { SetGrid } from '../shared/grid'
 
 var path = require('path')
 var express = require('express')

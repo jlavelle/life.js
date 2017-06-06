@@ -1,10 +1,10 @@
 import { sum } from 'ramda'
 
 import { game } from './life/life'
+import { SetGrid } from './life/grid'
 
 var path = require('path')
 var express = require('express')
-
 
 var app = express()
 var http = require('http').Server(app)
@@ -15,22 +15,7 @@ const n = 100
 let updateInterval = 10
 let paused = false
 
-function until (cond, action) {
-    let status = cond()
-    while(!status) {
-        action()
-        status = cond()
-    }
-}
-
-function randomCells (filledFraction) {
-    const result = new Set()
-    const fullEnough = () => result.size >= ((n * n) * filledFraction)
-    until(fullEnough, () => result.add(Math.floor((n * n) * Math.random())))
-    return result
-}
-
-let cells = randomCells(0.5)
+let cells = SetGrid.randomCells(n, 0.5)
 let generations = 0
 
 let ups = [] // updates per second, not accounting for the updateInterval
@@ -38,7 +23,7 @@ let lastAverage = 0
 
 function getAverageUps() {
     let averageUps = ups.length == 0 ? lastAverage : Math.round(sum(ups) / ups.length)
-    if(ups.length >= 100) {
+    if(ups.length >= 30) {
         lastAverage = averageUps
         ups = []
     }
@@ -48,7 +33,7 @@ function getAverageUps() {
 let lastGeneration = Date.now()
 let gps = 0 // generations per second, accounts for interval
 
-const gol = game(n)
+const gol = game(SetGrid)(n)
 setInterval(() => {
     if (!paused) {
         gps = Math.round(1000 / (Date.now() - lastGeneration))
@@ -67,7 +52,7 @@ function update() {
 
 function renderDataToJSON() {
     return JSON.stringify({
-        cells: [...cells],
+        cells: cells.toSerializable(),
         stats: { gps, ups: getAverageUps(), generations}
     })
 }
@@ -79,9 +64,9 @@ function togglePause() {
 function applyInteraction(interactionEvent) {
     const event = JSON.parse(interactionEvent)
     if (event.erasing) {
-        if (cells.has(event.index)) cells.delete(event.index)
+        if (cells.alive(event.index)) cells.kill(event.index)
     } else {
-        cells.add(event.index)
+        cells.birth(event.index)
     }
 }
 
@@ -99,7 +84,7 @@ io.on('connection', function (socket) {
     socket.on('interaction', applyInteraction)
     socket.on('pause', togglePause)
     socket.on('randomFill', (density) => {
-        cells = randomCells(density)
+        cells = SetGrid.randomCells(n, density)
     })
     socket.on('clear', () => cells.clear())
     socket.on('message', (message) => {

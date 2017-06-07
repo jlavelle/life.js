@@ -1,7 +1,7 @@
 import { sum } from 'ramda'
 
 import { game } from './life/life'
-import { SetGrid } from '../shared/grid'
+import { SetGrid, ArrayGrid } from '../shared/grid'
 
 var path = require('path')
 var express = require('express')
@@ -15,7 +15,9 @@ const n = 100
 let updateInterval = 10
 let paused = false
 
-let cells = SetGrid.randomCells(n, 0.5)
+let gridType = SetGrid
+
+let cells = gridType.randomCells(n, 0.5)
 let generations = 0
 
 let ups = [] // updates per second, not accounting for the updateInterval
@@ -33,36 +35,39 @@ function getAverageUps() {
 let lastGeneration = Date.now()
 let gps = 0 // generations per second, accounts for interval
 
-const gol = game(SetGrid)(n)
+const gol = game(gridType)(n)
 setInterval(() => {
+    let preUpdate = Date.now()
     if (!paused) {
         gps = Math.round(1000 / (Date.now() - lastGeneration))
         lastGeneration = Date.now()
-        let preUpdate = Date.now()
         cells = gol(cells)
         generations += 1
         ups.push(1000 / (Date.now() - preUpdate))
+    } else {
+        gps = 0
     }
 }, updateInterval)
 
 function update() {
-    const updateData = renderDataToJSON()
-    return updateData
+    return {
+        cells: cells.toSerializable(),
+        stats: {gps, ups: getAverageUps(), generations}
+    }
 }
 
-function renderDataToJSON() {
-    return JSON.stringify({
-        cells: cells.toSerializable(),
-        stats: { gps, ups: getAverageUps(), generations}
-    })
-}
+// function renderDataToJSON() {
+//     return JSON.stringify({
+//         cells: cells.toSerializable(),
+//         stats: { gps, ups: getAverageUps(), generations}
+//     })
+// }
 
 function togglePause() {
     paused = !paused
 }
 
-function applyInteraction(interactionEvent) {
-    const event = JSON.parse(interactionEvent)
+function applyInteraction(event) {
     if (event.erasing) {
         if (cells.alive(event.index)) cells.kill(event.index)
     } else {
@@ -84,7 +89,7 @@ io.on('connection', function (socket) {
     socket.on('interaction', applyInteraction)
     socket.on('pause', togglePause)
     socket.on('randomFill', (density) => {
-        cells = SetGrid.randomCells(n, density)
+        cells = gridType.randomCells(n, density)
     })
     socket.on('clear', () => cells.clear())
     socket.on('message', (message) => {
@@ -94,7 +99,7 @@ io.on('connection', function (socket) {
         const updateData = update()
         socket.emit('update', updateData)
     }, updateInterval)
-    socket.emit('start', n)
+    socket.emit('start', {size: n, gridType})
 })
 
 http.listen(3000, function () {

@@ -12,7 +12,7 @@ export const Actions = {
         socket.emit('pause')
     },
     draw (data) {
-        socket.emit('interaction', JSON.stringify(data))
+        socket.emit('interaction', data)
     },
     randomFill(fillDensity) {
         return () => socket.emit('randomFill', fillDensity)
@@ -21,6 +21,6 @@ export const Actions = {
         socket.emit('clear')
     },
     sendMessage(message) {
-        socket.emit('message', JSON.stringify(message))
+        socket.emit('message', message)
     }
 }

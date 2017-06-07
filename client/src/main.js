@@ -6,21 +6,17 @@ import { ChatUI } from './chatUI'
 
 const socket = io()
 
-function run(size) {
+function run({size, gridType}) {
   Actions.initialize(socket, () => {
     const lifeUI = LifeUI(size)
     const chatUI = ChatUI()
 
     socket.on('update', event => {
-      const updateData = JSON.parse(event)
-      lifeUI.updateCells(updateData.cells)
-      lifeUI.updateStats(updateData.stats)
+      lifeUI.updateCells(event.cells)
+      lifeUI.updateStats(event.stats)
     })
 
-    socket.on('message', event => {
-      const message = JSON.parse(event)
-      chatUI.addMessage(message)
-    })
+    socket.on('message', chatUI.addMessage)
 
     lifeUI.renderLoop()
   })

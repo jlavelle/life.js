@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
     socket.on('randomFill', (density) => {
         cells = gridType.randomCells(n, density)
     })
-    socket.on('clear', () => cells.clear())
+    socket.on('clear', () => cells = gridType())
     socket.on('message', (message) => {
         io.emit('message', message)
     })

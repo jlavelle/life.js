@@ -1,15 +1,14 @@
-import { any, equals } from 'ramda'
-
 import { Point, getCoordinatesOfIndex, getIndexOfCoordinates } from '../../shared/coordinates'
 import { SetGrid } from '../../shared/grid'
 
 function Ruleset(born, survives) {
     return (alive, neighbors) => {
         if (!alive) {
-            return any(equals(neighbors), born)
+            //return any(equals(neighbors), born)
+            return born.reduce((acc, x) => acc || x == neighbors, false)
         }
         if (alive) {
-            return any(equals(neighbors), survives)
+            return survives.reduce((acc, x) => acc || x == neighbors, false)
         }
         return false
     }

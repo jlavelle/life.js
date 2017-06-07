@@ -15,7 +15,7 @@ const n = 100
 let updateInterval = 10
 let paused = false
 
-let gridType = SetGrid
+let gridType = ArrayGrid
 
 let cells = gridType.randomCells(n, 0.5)
 let generations = 0
@@ -92,7 +92,10 @@ io.on('connection', function (socket) {
         const updateData = update()
         socket.emit('update', updateData)
     }, updateInterval)
-    socket.emit('start', {size: n, gridType})
+    socket.emit('start', {
+        size: n,
+        gridType: gridType.toString()
+    })
 })
 
 http.listen(3000, function () {

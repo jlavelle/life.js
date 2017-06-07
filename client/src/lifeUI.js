@@ -5,15 +5,11 @@ import { Point, getCoordinatesOfIndex, getIndexOfCoordinates } from '../../share
 
 const lifeState = {
     erasing: false,
-    cells: new Set(),
+    cells: {alive: () => false}, // default before update tells us what type of grid to use
     fillDensity: 0.5
 }
 
-export function LifeUI(size) {
-    // TODO: singleton antipattern please wire up deps
-    if (!Actions.initialized) {
-        throw Error('No connection.')
-    }
+export function LifeUI(size, gridType) {
 
     const config = {
         size,
@@ -39,7 +35,7 @@ export function LifeUI(size) {
         if (fps <= config.fpsCap) {
             context.beginPath()
             for (let i = 0; i < size * size; i++) {
-                drawCell(i, lifeState.cells.has(i))
+                drawCell(i, lifeState.cells.alive(i))
             }
             lastTime = timestamp
         }
@@ -50,8 +46,7 @@ export function LifeUI(size) {
     return {
         renderLoop,
         updateCells(newCells) {
-            lifeState.cells.clear()
-            lifeState.cells = new Set([...newCells])
+            lifeState.cells = gridType.of(newCells)
         },
         updateStats(stats) {
             stats.fps = Math.round(fps)

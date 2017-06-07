@@ -11,8 +11,8 @@ function until (cond, action) {
     }
 }
 
-export function SetGrid() {
-    const cells = new Set()
+export function SetGrid(newCells) {
+    const cells = newCells || new Set()
 
     function alive(index) {
         return cells.has(index)
@@ -41,6 +41,10 @@ export function SetGrid() {
     }
 }
 
+SetGrid.of = function(idxArray) {
+    return SetGrid(new Set([...idxArray]))
+}
+
 SetGrid.randomCells = function (size, density) {
     const result = SetGrid()
     const fullEnough = () => result.size >= ((size * size) * density)
@@ -48,34 +52,45 @@ SetGrid.randomCells = function (size, density) {
     return result
 }
 
+SetGrid.toString = () => 'SetGrid'
+
 export function ArrayGrid(newCells) {
-    let cells = new Array(size * size).fill(false) || newCells
+        let cells = newCells || new Array()
 
-    function alive(index) {
-        return cells[index]
-    }
+        function alive(index) {
+            return cells[index]
+        }
 
-    function birth(index) {
-        cells[index] = true
-    }
+        function birth(index) {
+            cells[index] = true
+        }
 
-    function kill(index) {
-        cells[index] = false
-    }
+        function kill(index) {
+            cells[index] = false
+        }
 
-    function toSerializable() {
-        return cells
-    }
+        function toSerializable() {
+            return cells
+        }
 
-    return {
-        alive,
-        birth,
-        kill,
-        toSerializable
-    }
+        return {
+            alive,
+            birth,
+            kill,
+            toSerializable
+        }
 }
 
+ArrayGrid.of = ArrayGrid
+
 ArrayGrid.randomCells = function (size, density) {
-    const result = new Array(size * size).fill(0).map(() => !!Math.round(Math.random))
+    const result = new Array(size * size).fill(0).map(() => !!Math.round(Math.random()))
     return ArrayGrid(result)
+}
+
+ArrayGrid.toString = () => 'ArrayGrid'
+
+export const gridTypes = {
+    'SetGrid': SetGrid,
+    'ArrayGrid': ArrayGrid
 }

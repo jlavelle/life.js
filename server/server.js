@@ -79,12 +79,13 @@ io.on('connection', function (socket) {
     socket.on('message', (message) => {
         io.emit('message', message)
     })
-    setInterval(() => {
-        const updateData = update()
-        socket.emit('update', updateData)
-    }, updateInterval)
     socket.emit('start', n)
 })
+
+setInterval(() => {
+    const updateData = update()
+    io.emit('update', updateData)
+}, updateInterval)
 
 http.listen(3000, function () {
     console.log('Listening on port 3000.')

@@ -8,7 +8,8 @@ import { gridTypes } from '../../shared/grid'
 const socket = io()
 
 function run({size, gridType}) {
-  const gridFn = gridTypes[gridType]
+  console.log(gridTypes[gridType])
+  const gridFn = gridTypes[gridType](size)
   Actions.initialize(socket, () => {
     const lifeUI = LifeUI(size, gridFn)
     const chatUI = ChatUI()

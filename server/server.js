@@ -15,9 +15,10 @@ const n = 100
 let updateInterval = 10
 let paused = false
 
-let gridType = ArrayGrid
+let gridType = ArrayGrid(n)
 
-let cells = gridType.randomCells(n, 0.5)
+console.log(gridType)
+let cells = gridType.randomFill(0.5)
 let generations = 0
 
 let ups = [] // updates per second, not accounting for the updateInterval
@@ -82,7 +83,7 @@ io.on('connection', function (socket) {
     socket.on('interaction', applyInteraction)
     socket.on('pause', togglePause)
     socket.on('randomFill', (density) => {
-        cells = gridType.randomCells(n, density)
+        cells = gridType.randomFill(density)
     })
     socket.on('clear', () => cells = gridType())
     socket.on('message', (message) => {

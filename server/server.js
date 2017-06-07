@@ -56,13 +56,6 @@ function update() {
     }
 }
 
-// function renderDataToJSON() {
-//     return JSON.stringify({
-//         cells: cells.toSerializable(),
-//         stats: { gps, ups: getAverageUps(), generations}
-//     })
-// }
-
 function togglePause() {
     paused = !paused
 }

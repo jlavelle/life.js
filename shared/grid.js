@@ -67,6 +67,27 @@ export const ArrayGrid = createGridImpl({
     }
 })
 
+export const UintArrayGrid = createGridImpl({
+    cells: (size) => (newCells) => {
+        if (newCells) return newCells
+        const b = new ArrayBuffer(size * size)
+        return new Uint8Array(b)
+    },
+    alive: function (index) { return this[index] },
+    birth: function (index) { this[index] = 1 },
+    kill: function (index) { this[index] = 0 },
+    living: (cells) => cells.filter(cell => cell).length,
+    toString: () => 'UintArrayGrid',
+    of: (size) => (array) => UintArrayGrid(size)(array),
+    toSerializable: (val) => val,
+    randomFill: (size) => (density) => {
+        const b = new ArrayBuffer(size * size)
+        const result = new Uint8Array(size * size).fill(0).map(() => Math.random() < density ? 1 : 0)
+        return UintArrayGrid(size)(result)
+    }
+
+})
+
 function until (cond, action) {
     let status = cond()
     while(!status) {
@@ -77,5 +98,6 @@ function until (cond, action) {
 
 export const gridTypes = {
     'SetGrid': SetGrid,
-    'ArrayGrid': ArrayGrid
+    'ArrayGrid': ArrayGrid,
+    'UintArrayGrid': UintArrayGrid
 }

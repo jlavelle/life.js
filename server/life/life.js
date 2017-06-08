@@ -23,11 +23,10 @@ function precomputeStates() {
 }
 
 function fastLife(alive, neighbors) {
-    const livingN = neighbors.length
     if(alive) {
-        return livingN === 2 || livingN === 3
+        return neighbors === 2 || neighbors === 3
     } else {
-        return livingN === 3
+        return neighbors === 3
     }
 }
 
@@ -48,7 +47,7 @@ export function game(gridType) {
                 [x + 1, y + 1]
             ]
             return neighbors.filter(pair => {
-                return cells.alive(n * pair[0] + pair[1]) && inBounds(pair[0], pair[1])
+                return inBounds(pair[0], pair[1]) && cells.alive(n * pair[0] + pair[1])
             }).length
         }
 

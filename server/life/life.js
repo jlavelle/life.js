@@ -35,7 +35,7 @@ export function game(gridType) {
                 ]
                 return neighbors.filter(pair => {
                     const [x, y] = pair
-                    return cells.alive(n * x + y) && inBounds(x, y)
+                    return inBounds(x, y) && cells.alive(n * x + y)
                 }).length
             }
 

@@ -19,7 +19,7 @@ function runGridBenchmarks() {
     const generations = 1
     const size = 1000
     const trials = 1
-    const types = [ArrayGrid, SetGrid]
+    const types = [ArrayGrid]
     console.log(`Running Benchmarks with size=${size}, generations=${generations}, trials=${trials}`)
     types.forEach(type => {
         const time = SimpleLifeBenchmark(type, size, generations, trials)

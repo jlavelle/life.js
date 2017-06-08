@@ -13,8 +13,15 @@ function SimpleLifeBenchmark(gridConstructor, size, maxGens) {
     return (Date.now() - now)
 }
 
-const time = SimpleLifeBenchmark(ArrayGrid, 100, 1000)
-console.log(`ArrayGrid n=100, generations=1000: ${time / 1000}s`)
+function runGridBenchmarks() {
+    const generations = 100
+    const size = 100
+    const types = [ArrayGrid, SetGrid]
+    console.log(`Running Benchmarks with size=${size}, generations=${generations}`)
+    types.forEach(type => {
+        const time = SimpleLifeBenchmark(type, size, generations)
+        console.log(`${type(size).toString()}: ${time / 1000}s`)
+    })
+}
 
-const time2 = SimpleLifeBenchmark(SetGrid, 100, 1000)
-console.log(`SetGrid n=100, generations=1000: ${time2 / 1000}s`)
+runGridBenchmarks()
